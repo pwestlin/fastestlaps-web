@@ -60,8 +60,12 @@ class App extends Component {
    }
 
    fetchEntity(entityName, entityId) {
+      this.fetchJson(`/${entityName}/${entityId}`)
+   }
+
+   fetchJson(url) {
       const that = this;
-      fetch(`/${entityName}/${entityId}`, {
+      fetch(url, {
          method: 'GET',
          headers: {
             'Accept': 'application/json',
@@ -84,15 +88,18 @@ class App extends Component {
                that.showAlert('error', `${error}`, 5000);
             }
             console.log(`Error ${error}`);
+            that.setState({json: undefined})
          });
    }
 
    checkFetchResponseStatus(response) {
+      console.log(`response= ${response}`);
+      console.log(`response.status = ${response.status}`);
       if (response.status >= 200 && response.status < 300) {
          return response
       } else {
          response.text().then(function (text) {
-               console.log(text);
+               console.log(`Fel: ${text}`);
             }
          );
          const error = new Error(`${response.status}: ${response.statusText}`);
@@ -129,7 +136,7 @@ class App extends Component {
          type: typ
          //			icon: <img src="path/to/some/img/32x32.png" />
       })
-   }
+   };
 
    alertOptions = {
       offset: 14,

@@ -7,7 +7,7 @@ function TrackForm(props) {
             Track id:
             <input type="text" name="trackId" value={props.trackId} onChange={props.onChange}/>
          </label>
-         <button type="submit"/>
+         <input type="submit" id="track" value="Track"/>
       </form>
    );
 }

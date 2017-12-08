@@ -7,7 +7,7 @@ function DriverForm(props) {
             Driver id:
             <input type="text" name="driverId" value={props.driverId} onChange={props.onChange}/>
          </label>
-         <button type="submit"/>
+         <input type="submit" id="driver" value="Driver"/>
       </form>
    );
 }
