@@ -1,1 +1,1 @@
-Webclient for fastest laps.
+Webclient for [fastest laps server](https://github.com/pwestlin/fastestlaps-server).
