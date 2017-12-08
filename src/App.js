@@ -130,10 +130,10 @@ class App extends Component {
       );
    }
 
-   showAlert = (typ, txt, time) => {
+   showAlert = (type, txt, time) => {
       this.msg.show(txt, {
          time: time,
-         type: typ
+         type: type,
          //			icon: <img src="path/to/some/img/32x32.png" />
       })
    };
