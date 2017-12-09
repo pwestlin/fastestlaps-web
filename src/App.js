@@ -4,6 +4,7 @@ import DriverForm from './DriverForm'
 import VisaJson from './VisaJson'
 import TrackForm from './TrackForm';
 import AlertContainer from 'react-alert';
+import DriversForm from './DriversForm'
 
 class App extends Component {
 
@@ -18,36 +19,50 @@ class App extends Component {
          drivers: undefined
       };
 
-      this.handleDriverChange2 = this.handleDriverChange.bind(this);
-      this.handleDriverSubmit2 = this.handleDriverSubmit.bind(this);
+      this.handleDriverIdChange = this.handleDriverIdChange.bind(this);
+      this.handleDriverIdSubmit = this.handleDriverIdSubmit.bind(this);
 
-      this.handleTrackChange2 = this.handleTrackChange.bind(this);
-      this.handleTrackSubmit2 = this.handleTrackSubmit.bind(this);
+      this.handleTrackIdChange = this.handleTrackIdChange.bind(this);
+      this.handleTrackIdSubmit = this.handleTrackIdSubmit.bind(this);
 
-      //this.showAlert = this.showAlert.bind(this);
+      this.handleDriverChange = this.handleDriverChange.bind(this);
+      this.handleDriverSubmit = this.handleDriverSubmit.bind(this);
    }
 
    componentDidMount() {
       this.fetchDrivers("/drivers");
    }
 
-   handleDriverChange(event) {
+   handleDriverIdChange(event) {
       this.setState({driverId: event.target.value});
    }
 
-   handleDriverSubmit(event) {
+   handleDriverIdSubmit(event) {
       console.log(`Submit ${this.state.driverId}`);
       this.fetchDriver(this.state.driverId);
       event.preventDefault();
    }
 
-   handleTrackChange(event) {
+   handleTrackIdChange(event) {
       this.setState({trackId: event.target.value});
    }
 
-   handleTrackSubmit(event) {
+   handleTrackIdSubmit(event) {
       console.log(`Submit ${this.state.trackId}`);
       this.fetchTrack(this.state.trackId);
+      event.preventDefault();
+   }
+
+   handleDriverChange(event) {
+      console.log(`event = ${event}`);
+      console.log(`event.target = ${event.target}`);
+      console.log(`event.target.value = ${event.target.value}`);
+      this.setState({driverId: event.target.value});
+      this.fetchDriver(event.target.value);
+   }
+
+   handleDriverSubmit(event) {
+      console.log(`Submit ${this.state.driverId}`);
       event.preventDefault();
    }
 
@@ -143,65 +158,39 @@ class App extends Component {
 
    render() {
       console.log(`drivers = ${this.state.drivers}`);
-      let driverListItems = undefined;
-
-      /*
-            const listItems = this.state.drivers.map((driver) =>
-               <li>${driver.name}</li>
-            );
-      */
-      /*
-            for (var i in this.state.drivers) {
-               console.log(`this.state.drivers[${i}] = ${JSON.stringify(this.state.drivers[i])}`);
-      /!*
-               var id = this.state.drivers[i].id;
-               var name = this.state.drivers[i].name;
-      *!/
-            }
-            const listItems = this.state.drivers.map((driver) =>
-               <li>${driver.name}</li>
-            );
-      */
+      let driverListItems;
       if (this.state.drivers) {
-/*
-         console.log(`this.state.driver = ${JSON.stringify(this.state.drivers)}`);
-         for (const key in this.state.drivers) {
-            if (this.state.drivers.hasOwnProperty(key)) {
-               console.log(`key = ${key}`);
-               console.log(`this.state.drivers[${key}] = ${JSON.stringify(this.state.drivers[key])}`)
-            }
-         }
-         Object.entries(this.state.drivers).forEach(([key, driver]) => console.log(key, driver.id, driver.name));
-         Object.entries(this.state.drivers).forEach(([key, driver]) => console.log(driver.id, driver.name));
-         Object.entries(this.state.drivers).map(([key, driver]) => console.log(key, driver));
-         let drivers = [];
-         Object.entries(this.state.drivers).map(([key, driver]) => drivers.push(key, driver));
-         console.log(`drivers = ${drivers}`);
-         //driverListItems = drivers.map(driver => <li key={driver.id}>{driver.name}</li>);
-*/
-         driverListItems = Object.entries(this.state.drivers).map(([key, driver]) => <li key={driver.id}>{driver.name}</li>);
-         console.log(`driverListItems = ${driverListItems}`)
+         driverListItems = Object.entries(this.state.drivers).map(([key, driver]) => <li
+            key={driver.id}>{driver.name}</li>);
+         console.log(`driverListItems = ${driverListItems}`);
+         driverListItems = Object.entries(this.state.drivers).map(([key, driver]) => <option
+            value={driver.id}>{driver.name}</option>);
+         console.log(`driverListItems = ${driverListItems}`);
       }
 
       return (
          <div className="App">
             <header/>
             <div>
-               <DriverForm driverId={this.state.driverId} onSubmit={this.handleDriverSubmit2}
-                           onChange={this.handleDriverChange2}/>
-               <TrackForm trackId={this.state.trackId} onSubmit={this.handleTrackSubmit2}
-                          onChange={this.handleTrackChange2}/>
+               <DriverForm
+                  driverId={this.state.driverId}
+                  onSubmit={this.handleDriverIdSubmit}
+                  onChange={this.handleDriverIdChange}/>
+               <TrackForm
+                  trackId={this.state.trackId}
+                  onSubmit={this.handleTrackIdSubmit}
+                  onChange={this.handleTrackIdChange}/>
             </div>
-            {this.state.json !== undefined &&
-               <div>
-                  <VisaJson json={this.state.json}/>
-               </div>
-            }
-            {driverListItems ?
-               <div>
-                  <ul>{driverListItems}</ul>
-               </div>
-               : <div>Loading drivers...</div>
+            <div>
+               <DriversForm
+                  drivers={this.state.drivers}
+                  onSubmit={this.handleDriverSubmit}
+                  onChange={this.handleDriverChange}/>
+            </div>
+            {this.state.json &&
+            <div>
+               <VisaJson json={this.state.json}/>
+            </div>
             }
             <div>
                <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
