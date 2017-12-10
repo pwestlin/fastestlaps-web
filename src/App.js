@@ -5,6 +5,7 @@ import VisaJson from './VisaJson'
 import TrackForm from './TrackForm';
 import AlertContainer from 'react-alert';
 import DriversForm from './DriversForm'
+import TracksForm from './TracksForm'
 
 class App extends Component {
 
@@ -16,7 +17,8 @@ class App extends Component {
          // TODO: ints
          driverId: '1',
          trackId: '1',
-         drivers: undefined
+         drivers: undefined,
+         tracks: undefined,
       };
 
       this.handleDriverIdChange = this.handleDriverIdChange.bind(this);
@@ -27,10 +29,14 @@ class App extends Component {
 
       this.handleDriverChange = this.handleDriverChange.bind(this);
       this.handleDriverSubmit = this.handleDriverSubmit.bind(this);
+
+      this.handleTrackChange = this.handleTrackChange.bind(this);
+      this.handleTrackSubmit = this.handleTrackSubmit.bind(this);
    }
 
    componentDidMount() {
-      this.fetchDrivers("/drivers");
+      this.fetchDrivers();
+      this.fetchTracks();
    }
 
    handleDriverIdChange(event) {
@@ -54,15 +60,22 @@ class App extends Component {
    }
 
    handleDriverChange(event) {
-      console.log(`event = ${event}`);
-      console.log(`event.target = ${event.target}`);
-      console.log(`event.target.value = ${event.target.value}`);
       this.setState({driverId: event.target.value});
       this.fetchDriver(event.target.value);
    }
 
    handleDriverSubmit(event) {
       console.log(`Submit ${this.state.driverId}`);
+      event.preventDefault();
+   }
+
+   handleTrackChange(event) {
+      this.setState({trackId: event.target.value});
+      this.fetchTrack(event.target.value);
+   }
+
+   handleTrackSubmit(event) {
+      console.log(`Submit ${this.state.trackId}`);
       event.preventDefault();
    }
 
@@ -109,9 +122,9 @@ class App extends Component {
          });
    }
 
-   fetchDrivers(url) {
+   fetchDrivers() {
       const that = this;
-      fetch(url, {
+      fetch("/drivers", {
          method: 'GET',
          headers: {
             'Accept': 'application/json',
@@ -129,6 +142,37 @@ class App extends Component {
             that.showAlert('success', 'Ok', 1000);
          }
          that.setState({drivers: body});
+         console.log(`Response ${JSON.stringify(body)}`);
+      })
+         .catch(function (error) {
+            if (that.showAlerts) {
+               that.showAlert('error', `${error}`, 5000);
+            }
+            console.log(`Error ${error}`);
+            return undefined;
+         });
+   }
+
+   fetchTracks() {
+      const that = this;
+      fetch("/tracks", {
+         method: 'GET',
+         headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+         }
+      })
+         .then(this.checkFetchResponseStatus)
+         .then(function (response) {
+            console.log(`Reply: ${response}`);
+            return response.json()
+         }).then(function (body) {
+         console.log(`body.id = ${body.id}`);
+         console.log(`body.name = ${body.name}`);
+         if (that.showAlerts) {
+            that.showAlert('success', 'Ok', 1000);
+         }
+         that.setState({tracks: body});
          console.log(`Response ${JSON.stringify(body)}`);
       })
          .catch(function (error) {
@@ -186,6 +230,12 @@ class App extends Component {
                   drivers={this.state.drivers}
                   onSubmit={this.handleDriverSubmit}
                   onChange={this.handleDriverChange}/>
+            </div>
+            <div>
+               <TracksForm
+                  tracks={this.state.tracks}
+                  onSubmit={this.handleTrackSubmit}
+                  onChange={this.handleTrackChange}/>
             </div>
             {this.state.json &&
             <div>
