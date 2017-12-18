@@ -8,11 +8,11 @@ function TracksForm(props) {
    return (
       <div>
          {selectItems ?
-            <form onSubmit={props.onSubmit} onChange={props.onChange}>
+            <form onSubmit={props.onSubmit} onChange={props.onChange} defaultValue={props.trackId}>
                <label>
                   Tracks:
                </label>
-               <select value={props.trackId} defaultValue={props.trackId}>
+               <select>
                   {selectItems}
                </select>
                {/*<input type="submit" id="track" value="Track"/>*/}

@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import './App.css';
-import DriverForm from './DriverForm'
-import VisaJson from './VisaJson'
-import TrackForm from './TrackForm';
 import AlertContainer from 'react-alert';
-import DriversForm from './DriversForm'
-import TracksForm from './TracksForm'
+import DriverForm from "./DriverForm";
+import TrackForm from "./TrackForm";
+import DriversForm from "./DriversForm";
+import TracksForm from "./TracksForm";
+import ShowDriver from "./ShowDriver";
+import ShowTrack from "./ShowTrack";
 
 class App extends Component {
 
@@ -24,8 +25,12 @@ class App extends Component {
       this.handleDriverIdChange = this.handleDriverIdChange.bind(this);
       this.handleDriverIdSubmit = this.handleDriverIdSubmit.bind(this);
 
+      this.handleDriverFetched = this.handleDriverFetched.bind(this);
+
       this.handleTrackIdChange = this.handleTrackIdChange.bind(this);
       this.handleTrackIdSubmit = this.handleTrackIdSubmit.bind(this);
+
+      this.handleTrackFetched = this.handleTrackFetched.bind(this);
 
       this.handleDriverChange = this.handleDriverChange.bind(this);
       this.handleDriverSubmit = this.handleDriverSubmit.bind(this);
@@ -34,13 +39,7 @@ class App extends Component {
       this.handleTrackSubmit = this.handleTrackSubmit.bind(this);
    }
 
-   /*
-      componentDidMount() {
-         this.fetchDrivers();
-         this.fetchTracks();
-      }
-   */
-   componentWillMount() {
+   componentDidMount() {
       this.fetchDrivers();
       this.fetchTracks();
    }
@@ -49,9 +48,19 @@ class App extends Component {
       this.setState({driverId: event.target.value});
    }
 
+   handleDriverFetched(json) {
+      this.setState({driverJson: json});
+      this.setState({trackJson: undefined});
+   }
+
+   handleTrackFetched(json) {
+      this.setState({trackJson: json});
+      this.setState({driverJson: undefined});
+   }
+
    handleDriverIdSubmit(event) {
       console.log(`Submit ${this.state.driverId}`);
-      this.fetchDriver(this.state.driverId);
+      this.fetchDriver(this.state.driverId, this.handleDriverFetched);
       event.preventDefault();
    }
 
@@ -61,13 +70,13 @@ class App extends Component {
 
    handleTrackIdSubmit(event) {
       console.log(`Submit ${this.state.trackId}`);
-      this.fetchTrack(this.state.trackId);
+      this.fetchTrack(this.state.trackId, this.handleTrackFetched);
       event.preventDefault();
    }
 
    handleDriverChange(event) {
       this.setState({driverId: event.target.value});
-      this.fetchDriver(event.target.value);
+      this.fetchDriver(event.target.value, this.handleDriverFetched);
    }
 
    handleDriverSubmit(event) {
@@ -77,7 +86,7 @@ class App extends Component {
 
    handleTrackChange(event) {
       this.setState({trackId: event.target.value});
-      this.fetchTrack(event.target.value);
+      this.fetchTrack(event.target.value, this.handleTrackFetched);
    }
 
    handleTrackSubmit(event) {
@@ -85,19 +94,19 @@ class App extends Component {
       event.preventDefault();
    }
 
-   fetchDriver(driverId) {
-      this.fetchEntity("drivers", driverId)
+   fetchDriver(driverId, handleDriverFetched) {
+      this.fetchEntity("drivers", driverId, handleDriverFetched)
    }
 
-   fetchTrack(trackId) {
-      this.fetchEntity("tracks", trackId)
+   fetchTrack(trackId, handleTrackFetched) {
+      this.fetchEntity("tracks", trackId, handleTrackFetched)
    }
 
-   fetchEntity(entityName, entityId) {
-      this.fetchJson(`/${entityName}/${entityId}`)
+   fetchEntity(entityName, entityId, handleJsonFetched) {
+      this.fetchJson(`/${entityName}/${entityId}`, handleJsonFetched)
    }
 
-   fetchJson(url) {
+   fetchJson(url, handleJsonFetched) {
       const that = this;
       fetch(url, {
          method: 'GET',
@@ -117,6 +126,7 @@ class App extends Component {
             that.showAlert('success', 'Ok', 1000);
          }
          that.setState({json: body});
+         handleJsonFetched(body);
          console.log(`Response ${JSON.stringify(body)}`);
       })
          .catch(error => {
@@ -220,44 +230,52 @@ class App extends Component {
 
       return (
          <div className="App">
-            <header/>
-            <div>
-               <DriverForm
-                  driverId={this.state.driverId}
-                  onSubmit={this.handleDriverIdSubmit}
-                  onChange={this.handleDriverIdChange}
-               />
-               <TrackForm
-                  trackId={this.state.trackId}
-                  onSubmit={this.handleTrackIdSubmit}
-                  onChange={this.handleTrackIdChange}
-               />
+            <header className="App-header"><h1>Fastest laptimes</h1></header>
+            <div className="Content">
+               <div className="Nav">
+                  <div>
+                     <DriverForm
+                        driverId={this.state.driverId}
+                        onSubmit={this.handleDriverIdSubmit}
+                        onChange={this.handleDriverIdChange}
+                     />
+                     <TrackForm
+                        trackId={this.state.trackId}
+                        onSubmit={this.handleTrackIdSubmit}
+                        onChange={this.handleTrackIdChange}
+                     />
+                  </div>
+                  <div>
+                     <DriversForm
+                        drivers={this.state.drivers}
+                        onSubmit={this.handleDriverSubmit}
+                        onChange={this.handleDriverChange}
+                        driverId={this.state.driverId}
+                     />
+                  </div>
+                  <div>
+                     <TracksForm
+                        tracks={this.state.tracks}
+                        onSubmit={this.handleTrackSubmit}
+                        onChange={this.handleTrackChange}
+                        trackId={this.state.trackId}
+                     />
+                  </div>
+
+               </div>
+               <div className="Main">
+                  {/*{this.state.json && <VisaJson json={this.state.json}/>}*/}
+                  {/*{this.state.json && <ShowDriver json={this.state.json}/>}*/}
+                  {this.state.driverJson && <ShowDriver json={this.state.driverJson}/>}
+                  {this.state.trackJson && <ShowTrack json={this.state.trackJson}/>}
+               </div>
+               <div>
+                  <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
+               </div>
             </div>
-            <div>
-               <DriversForm
-                  drivers={this.state.drivers}
-                  onSubmit={this.handleDriverSubmit}
-                  onChange={this.handleDriverChange}
-                  driverId={this.state.driverId}
-               />
-            </div>
-            <div>
-               <TracksForm
-                  tracks={this.state.tracks}
-                  onSubmit={this.handleTrackSubmit}
-                  onChange={this.handleTrackChange}
-                  trackId={this.state.trackId}
-               />
-            </div>
-            {this.state.json &&
-            <div>
-               <VisaJson json={this.state.json}/>
-            </div>
-            }
-            <div>
-               <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
-            </div>
+            <footer className="App-footer">Copyright &copy; 2017 Peter Westlin</footer>
          </div>
+
       );
    }
 

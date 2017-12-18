@@ -7,7 +7,10 @@ const VisaJson = ({json}) => (
       hideRoot={true}
       shouldExpandNode={(keyName, data, level) => {
          return true
-      }}/>
+      }}
+      labelRenderer={raw => <strong>{raw}</strong>}
+      valueRenderer={raw => <em>{raw}</em>}
+   />
 );
 
 export default VisaJson
