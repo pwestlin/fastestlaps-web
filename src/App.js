@@ -34,7 +34,13 @@ class App extends Component {
       this.handleTrackSubmit = this.handleTrackSubmit.bind(this);
    }
 
-   componentDidMount() {
+   /*
+      componentDidMount() {
+         this.fetchDrivers();
+         this.fetchTracks();
+      }
+   */
+   componentWillMount() {
       this.fetchDrivers();
       this.fetchTracks();
    }
@@ -101,10 +107,10 @@ class App extends Component {
          }
       })
          .then(this.checkFetchResponseStatus)
-         .then(function (response) {
+         .then(response => {
             console.log(`Reply: ${response}`);
             return response.json()
-         }).then(function (body) {
+         }).then(body => {
          console.log(`body.id = ${body.id}`);
          console.log(`body.name = ${body.name}`);
          if (that.showAlerts) {
@@ -113,7 +119,7 @@ class App extends Component {
          that.setState({json: body});
          console.log(`Response ${JSON.stringify(body)}`);
       })
-         .catch(function (error) {
+         .catch(error => {
             if (that.showAlerts) {
                that.showAlert('error', `${error}`, 5000);
             }
@@ -132,10 +138,10 @@ class App extends Component {
          }
       })
          .then(this.checkFetchResponseStatus)
-         .then(function (response) {
+         .then(response => {
             console.log(`Reply: ${response}`);
             return response.json()
-         }).then(function (body) {
+         }).then(body => {
          console.log(`body.id = ${body.id}`);
          console.log(`body.name = ${body.name}`);
          if (that.showAlerts) {
@@ -144,7 +150,7 @@ class App extends Component {
          that.setState({drivers: body});
          console.log(`Response ${JSON.stringify(body)}`);
       })
-         .catch(function (error) {
+         .catch(error => {
             if (that.showAlerts) {
                that.showAlert('error', `${error}`, 5000);
             }
@@ -219,23 +225,29 @@ class App extends Component {
                <DriverForm
                   driverId={this.state.driverId}
                   onSubmit={this.handleDriverIdSubmit}
-                  onChange={this.handleDriverIdChange}/>
+                  onChange={this.handleDriverIdChange}
+               />
                <TrackForm
                   trackId={this.state.trackId}
                   onSubmit={this.handleTrackIdSubmit}
-                  onChange={this.handleTrackIdChange}/>
+                  onChange={this.handleTrackIdChange}
+               />
             </div>
             <div>
                <DriversForm
                   drivers={this.state.drivers}
                   onSubmit={this.handleDriverSubmit}
-                  onChange={this.handleDriverChange}/>
+                  onChange={this.handleDriverChange}
+                  driverId={this.state.driverId}
+               />
             </div>
             <div>
                <TracksForm
                   tracks={this.state.tracks}
                   onSubmit={this.handleTrackSubmit}
-                  onChange={this.handleTrackChange}/>
+                  onChange={this.handleTrackChange}
+                  trackId={this.state.trackId}
+               />
             </div>
             {this.state.json &&
             <div>

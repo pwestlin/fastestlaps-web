@@ -8,7 +8,7 @@ function DriversForm(props) {
    return (
       <div>
          {selectItems ?
-            <form onSubmit={props.onSubmit} onChange={props.onChange}>
+            <form onSubmit={props.onSubmit} onChange={props.onChange} defaultValue={props.driverId}>
                <label>
                   Drivers:
                </label>

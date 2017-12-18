@@ -12,7 +12,7 @@ function TracksForm(props) {
                <label>
                   Tracks:
                </label>
-               <select>
+               <select value={props.trackId} defaultValue={props.trackId}>
                   {selectItems}
                </select>
                {/*<input type="submit" id="track" value="Track"/>*/}
