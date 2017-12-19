@@ -1,3 +1,10 @@
 body {
     background-color: #EEE;
 }
+
+div {
+    #margin: 20px;
+    #padding: 20px;
+    #padding: 0;
+    #border: medium solid black;
+}

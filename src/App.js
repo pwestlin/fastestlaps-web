@@ -1,8 +1,6 @@
 import React, {Component} from 'react';
 import './App.css';
 import AlertContainer from 'react-alert';
-import DriverForm from "./DriverForm";
-import TrackForm from "./TrackForm";
 import DriversForm from "./DriversForm";
 import TracksForm from "./TracksForm";
 import ShowDriver from "./ShowDriver";
@@ -22,13 +20,7 @@ class App extends Component {
          tracks: undefined,
       };
 
-      this.handleDriverIdChange = this.handleDriverIdChange.bind(this);
-      this.handleDriverIdSubmit = this.handleDriverIdSubmit.bind(this);
-
       this.handleDriverFetched = this.handleDriverFetched.bind(this);
-
-      this.handleTrackIdChange = this.handleTrackIdChange.bind(this);
-      this.handleTrackIdSubmit = this.handleTrackIdSubmit.bind(this);
 
       this.handleTrackFetched = this.handleTrackFetched.bind(this);
 
@@ -44,10 +36,6 @@ class App extends Component {
       this.fetchTracks();
    }
 
-   handleDriverIdChange(event) {
-      this.setState({driverId: event.target.value});
-   }
-
    handleDriverFetched(json) {
       this.setState({driverJson: json});
       this.setState({trackJson: undefined});
@@ -56,22 +44,6 @@ class App extends Component {
    handleTrackFetched(json) {
       this.setState({trackJson: json});
       this.setState({driverJson: undefined});
-   }
-
-   handleDriverIdSubmit(event) {
-      console.log(`Submit ${this.state.driverId}`);
-      this.fetchDriver(this.state.driverId, this.handleDriverFetched);
-      event.preventDefault();
-   }
-
-   handleTrackIdChange(event) {
-      this.setState({trackId: event.target.value});
-   }
-
-   handleTrackIdSubmit(event) {
-      console.log(`Submit ${this.state.trackId}`);
-      this.fetchTrack(this.state.trackId, this.handleTrackFetched);
-      event.preventDefault();
    }
 
    handleDriverChange(event) {
@@ -234,18 +206,6 @@ class App extends Component {
             <div className="Content">
                <div className="Nav">
                   <div>
-                     <DriverForm
-                        driverId={this.state.driverId}
-                        onSubmit={this.handleDriverIdSubmit}
-                        onChange={this.handleDriverIdChange}
-                     />
-                     <TrackForm
-                        trackId={this.state.trackId}
-                        onSubmit={this.handleTrackIdSubmit}
-                        onChange={this.handleTrackIdChange}
-                     />
-                  </div>
-                  <div>
                      <DriversForm
                         drivers={this.state.drivers}
                         onSubmit={this.handleDriverSubmit}
@@ -261,7 +221,6 @@ class App extends Component {
                         trackId={this.state.trackId}
                      />
                   </div>
-
                </div>
                <div className="Main">
                   {/*{this.state.json && <VisaJson json={this.state.json}/>}*/}
