@@ -1,259 +1,86 @@
 import React, {Component} from 'react';
+import logo from './header.jpg';
 import './App.css';
-import AlertContainer from 'react-alert';
-import DriversForm from "./DriversForm";
-import TracksForm from "./TracksForm";
-import ShowDriver from "./ShowDriver";
-import ShowTrack from "./ShowTrack";
+import {Link, Route, Switch,} from 'react-router-dom';
+import {Laptimes, FastestLaptimesPerTrackAndKartType} from "./Laptimes";
+
+
+const FastestLapTimesPerTrack = (props) => {
+  const {laptime} = props;
+  return (
+    <div>
+      id: {laptime.id}<br/>
+      track: {laptime.track.name}<br/>
+      kart: {laptime.kart}<br/>
+      time: {laptime.time}<br/>
+      driver: {laptime.driver.name}<br/>
+      date: {laptime.date}<br/>
+    </div>
+  )
+};
+
+const Home = () => {
+  console.log("Laptimes", Laptimes);
+  const grouped = FastestLaptimesPerTrackAndKartType.groupBy((laptime) => laptime.track.name);
+  console.log("grouped", grouped);
+  const fastestLapTimesPerTrack = FastestLaptimesPerTrackAndKartType.sort((a, b) => a.track.name.localeCompare(b.track.name)).map((laptime) => {
+    console.log("laptime 1", laptime);
+    return <FastestLapTimesPerTrack key={laptime.id} laptime={laptime}/>
+  });
+  return (
+    <div>
+      <p className="App-intro">
+        Show fastest laptimes for every track in the system
+      </p>
+      {fastestLapTimesPerTrack}
+    </div>
+  )
+};
+
+const About = () => {
+  return (
+    <div>
+      <p className="App-intro">
+        About
+      </p>
+      <div className="Loader"/>
+    </div>
+  )
+};
 
 class App extends Component {
+  render() {
+    return (
+      <div className="App">
+        <header className="App-header">
+          <img src={logo} className="App-logo" alt="logo"/>
+          <h1 className="App-title">Welcome to Karting laptimes</h1>
+        </header>
+        <div className="Main">
+          <div className="Nav">
+            <nav>
+              <ul>
+                <li><Link to='/'>Home</Link></li>
+                <li><Link to='/about'>About</Link></li>
+              </ul>
+            </nav>
 
-   constructor(props) {
-      super();
+          </div>
+          <div className="Content">
+            <Switch>
+              <Route exact path="/" component={Home}/>
+              <Route path="/about" component={About}/>
+            </Switch>
+          </div>
 
-      this.showAlerts = props.showAlerts;
-      this.state = {
-         // TODO: ints
-         driverId: '1',
-         trackId: '1',
-         drivers: undefined,
-         tracks: undefined,
-      };
-
-      this.handleDriverFetched = this.handleDriverFetched.bind(this);
-
-      this.handleTrackFetched = this.handleTrackFetched.bind(this);
-
-      this.handleDriverChange = this.handleDriverChange.bind(this);
-      this.handleDriverSubmit = this.handleDriverSubmit.bind(this);
-
-      this.handleTrackChange = this.handleTrackChange.bind(this);
-      this.handleTrackSubmit = this.handleTrackSubmit.bind(this);
-   }
-
-   componentDidMount() {
-      this.fetchDrivers();
-      this.fetchTracks();
-   }
-
-   handleDriverFetched(json) {
-      this.setState({driverJson: json});
-      this.setState({trackJson: undefined});
-   }
-
-   handleTrackFetched(json) {
-      this.setState({trackJson: json});
-      this.setState({driverJson: undefined});
-   }
-
-   handleDriverChange(event) {
-      this.setState({driverId: event.target.value});
-      this.fetchDriver(event.target.value, this.handleDriverFetched);
-   }
-
-   handleDriverSubmit(event) {
-      console.log(`Submit ${this.state.driverId}`);
-      event.preventDefault();
-   }
-
-   handleTrackChange(event) {
-      this.setState({trackId: event.target.value});
-      this.fetchTrack(event.target.value, this.handleTrackFetched);
-   }
-
-   handleTrackSubmit(event) {
-      console.log(`Submit ${this.state.trackId}`);
-      event.preventDefault();
-   }
-
-   fetchDriver(driverId, handleDriverFetched) {
-      this.fetchEntity("drivers", driverId, handleDriverFetched)
-   }
-
-   fetchTrack(trackId, handleTrackFetched) {
-      this.fetchEntity("tracks", trackId, handleTrackFetched)
-   }
-
-   fetchEntity(entityName, entityId, handleJsonFetched) {
-      this.fetchJson(`/${entityName}/${entityId}`, handleJsonFetched)
-   }
-
-   fetchJson(url, handleJsonFetched) {
-      const that = this;
-      fetch(url, {
-         method: 'GET',
-         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-         }
-      })
-         .then(this.checkFetchResponseStatus)
-         .then(response => {
-            console.log(`Reply: ${response}`);
-            return response.json()
-         }).then(body => {
-         console.log(`body.id = ${body.id}`);
-         console.log(`body.name = ${body.name}`);
-         if (that.showAlerts) {
-            that.showAlert('success', 'Ok', 1000);
-         }
-         that.setState({json: body});
-         handleJsonFetched(body);
-         console.log(`Response ${JSON.stringify(body)}`);
-      })
-         .catch(error => {
-            if (that.showAlerts) {
-               that.showAlert('error', `${error}`, 5000);
-            }
-            console.log(`Error ${error}`);
-            that.setState({json: undefined})
-         });
-   }
-
-   fetchDrivers() {
-      const that = this;
-      fetch("/drivers", {
-         method: 'GET',
-         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-         }
-      })
-         .then(this.checkFetchResponseStatus)
-         .then(response => {
-            console.log(`Reply: ${response}`);
-            return response.json()
-         }).then(body => {
-         console.log(`body.id = ${body.id}`);
-         console.log(`body.name = ${body.name}`);
-         if (that.showAlerts) {
-            that.showAlert('success', 'Ok', 1000);
-         }
-         that.setState({drivers: body});
-         console.log(`Response ${JSON.stringify(body)}`);
-      })
-         .catch(error => {
-            if (that.showAlerts) {
-               that.showAlert('error', `${error}`, 5000);
-            }
-            console.log(`Error ${error}`);
-            return undefined;
-         });
-   }
-
-   fetchTracks() {
-      const that = this;
-      fetch("/tracks", {
-         method: 'GET',
-         headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-         }
-      })
-         .then(this.checkFetchResponseStatus)
-         .then(function (response) {
-            console.log(`Reply: ${response}`);
-            return response.json()
-         }).then(function (body) {
-         console.log(`body.id = ${body.id}`);
-         console.log(`body.name = ${body.name}`);
-         if (that.showAlerts) {
-            that.showAlert('success', 'Ok', 1000);
-         }
-         that.setState({tracks: body});
-         console.log(`Response ${JSON.stringify(body)}`);
-      })
-         .catch(function (error) {
-            if (that.showAlerts) {
-               that.showAlert('error', `${error}`, 5000);
-            }
-            console.log(`Error ${error}`);
-            return undefined;
-         });
-   }
-
-   checkFetchResponseStatus(response) {
-      console.log(`response= ${response}`);
-      console.log(`response.status = ${response.status}`);
-      if (response.status >= 200 && response.status < 300) {
-         return response
-      } else {
-         response.text().then(function (text) {
-               console.log(`Fel: ${text}`);
-            }
-         );
-         const error = new Error(`${response.status}: ${response.statusText}`);
-         error.response = response;
-         throw error
-      }
-   }
-
-   render() {
-      console.log(`drivers = ${this.state.drivers}`);
-      let driverListItems;
-      if (this.state.drivers) {
-         driverListItems = Object.entries(this.state.drivers).map(([key, driver]) => <li
-            key={driver.id}>{driver.name}</li>);
-         console.log(`driverListItems = ${driverListItems}`);
-         driverListItems = Object.entries(this.state.drivers).map(([key, driver]) => <option
-            value={driver.id}>{driver.name}</option>);
-         console.log(`driverListItems = ${driverListItems}`);
-      }
-
-      return (
-         <div className="App">
-            <header className="App-header"><h1>Fastest laptimes</h1></header>
-            <div className="Content">
-               <div className="Nav">
-                  <div>
-                     <DriversForm
-                        drivers={this.state.drivers}
-                        onSubmit={this.handleDriverSubmit}
-                        onChange={this.handleDriverChange}
-                        driverId={this.state.driverId}
-                     />
-                  </div>
-                  <div>
-                     <TracksForm
-                        tracks={this.state.tracks}
-                        onSubmit={this.handleTrackSubmit}
-                        onChange={this.handleTrackChange}
-                        trackId={this.state.trackId}
-                     />
-                  </div>
-               </div>
-               <div className="Main">
-                  {/*{this.state.json && <VisaJson json={this.state.json}/>}*/}
-                  {/*{this.state.json && <ShowDriver json={this.state.json}/>}*/}
-                  {this.state.driverJson && <ShowDriver json={this.state.driverJson}/>}
-                  {this.state.trackJson && <ShowTrack json={this.state.trackJson}/>}
-               </div>
-               <div>
-                  <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
-               </div>
-            </div>
-            <footer className="App-footer">Copyright &copy; 2017 Peter Westlin</footer>
-         </div>
-
-      );
-   }
-
-   showAlert = (type, txt, time) => {
-      this.msg.show(txt, {
-         time: time,
-         type: type,
-         //			icon: <img src="path/to/some/img/32x32.png" />
-      })
-   };
-
-   alertOptions = {
-      offset: 14,
-      position: 'top left',
-      theme: 'dark',
-      time: 7000,
-      transition: 'scale'
-   };
-
+        </div>
+        <footer className="App-footer">
+          <p>Created by: Peter Westlin</p>
+          <p>Contact information: <a href="mailto:peter.westlin@gmail.com">peter.westlin@gmail.com</a>.</p>
+        </footer>
+      </div>
+    );
+  }
 }
 
 export default App;
