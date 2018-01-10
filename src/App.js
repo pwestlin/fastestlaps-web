@@ -2,30 +2,50 @@ import React, {Component} from 'react';
 import logo from './header.jpg';
 import './App.css';
 import {Link, Route, Switch,} from 'react-router-dom';
-import {Laptimes, FastestLaptimesPerTrackAndKartType} from "./Laptimes";
+import {FastestLaptimesPerTrackAndKartType, Laptimes} from "./Laptimes";
 
 
 const FastestLapTimesPerTrack = (props) => {
-  const {laptime} = props;
+  const {laptimes} = props;
+  const trackName = laptimes[0].track.name;
+  const laptimeList = laptimes.map((laptime) => <LaptimeRow key={laptime.id} laptime={laptime}/>);
   return (
     <div>
-      id: {laptime.id}<br/>
-      track: {laptime.track.name}<br/>
-      kart: {laptime.kart}<br/>
-      time: {laptime.time}<br/>
-      driver: {laptime.driver.name}<br/>
-      date: {laptime.date}<br/>
+      <h2>{trackName}</h2>
+      <table>
+        <thead>
+        <tr>
+          <th>time</th>
+          <th>kart</th>
+          <th>driver</th>
+          <th>date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {laptimeList}
+        </tbody>
+      </table>
     </div>
+  )
+};
+
+const LaptimeRow = (props) => {
+  const {laptime} = props;
+  return (
+    <tr>
+      <td>{laptime.time}</td>
+      <td>{laptime.kart}</td>
+      <td>{laptime.driver.name}</td>
+      <td>{laptime.date}</td>
+    </tr>
   )
 };
 
 const Home = () => {
   console.log("Laptimes", Laptimes);
-  const grouped = FastestLaptimesPerTrackAndKartType.groupBy((laptime) => laptime.track.name);
-  console.log("grouped", grouped);
-  const fastestLapTimesPerTrack = FastestLaptimesPerTrackAndKartType.sort((a, b) => a.track.name.localeCompare(b.track.name)).map((laptime) => {
-    console.log("laptime 1", laptime);
-    return <FastestLapTimesPerTrack key={laptime.id} laptime={laptime}/>
+  const fastestLapTimesPerTrack = FastestLaptimesPerTrackAndKartType.groupBy((laptime) => laptime.track.name).map((laptimes) => {
+    console.log("laptime 1", laptimes);
+    return <FastestLapTimesPerTrack key={laptimes[0].track.id} laptimes={laptimes}/>
   });
   return (
     <div>
