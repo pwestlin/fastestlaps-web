@@ -11,7 +11,7 @@ const FastestLapTimesPerTrack = (props) => {
   const laptimeList = laptimes.map((laptime) => <LaptimeRow key={laptime.id} laptime={laptime}/>);
   return (
     <div>
-      <h2>{trackName}</h2>
+      <h3>{trackName}</h3>
       <table>
         <thead>
         <tr>
@@ -49,9 +49,7 @@ const Home = () => {
   });
   return (
     <div>
-      <p className="App-intro">
-        Show fastest laptimes for every track in the system
-      </p>
+      <h2>The fastest laptimes per track</h2>
       {fastestLapTimesPerTrack}
     </div>
   )
